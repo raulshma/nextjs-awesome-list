@@ -24,7 +24,7 @@ export default function Home({ data }) {
 }
 
 export const getServerSideProps = withPageAuth({
-  redirectTo: '/',
+  redirectTo: '/login',
   async getServerSideProps(ctx, supabase) {
     const user = await supabase.auth.getUser();
     if (user.data) {

@@ -5,10 +5,13 @@ import {
   useMantineColorScheme,
   Box,
   Title,
+  Anchor,
 } from '@mantine/core';
+import { useRouter } from 'next/router';
 import { IconSun, IconMoonStars } from '@tabler/icons';
 
 export function Brand() {
+  const router = useRouter();
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 
   return (
@@ -19,7 +22,9 @@ export function Brand() {
       })}
     >
       <Group position="apart">
-        <Title size="h3">awesome list</Title>
+        <Title size="h3">
+          <Anchor variant='text' color='orange' onClick={() => router.push('/')}>awesome list</Anchor>
+        </Title>
         <ActionIcon
           variant="default"
           onClick={() => toggleColorScheme()}

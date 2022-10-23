@@ -1,6 +1,7 @@
 import { Auth, ThemeSupa } from '@supabase/auth-ui-react';
 import { useUser, useSessionContext } from '@supabase/auth-helpers-react';
 import { useEffect, useState } from 'react';
+import { Container } from '@mantine/core';
 
 const Login = () => {
   const { isLoading, session, error, supabaseClient } = useSessionContext();
@@ -20,13 +21,16 @@ const Login = () => {
     return (
       <>
         {error && <p>{error.message}</p>}
-        <Auth
-          redirectTo="http://localhost:3000/"
-          appearance={{ theme: ThemeSupa }}
-          supabaseClient={supabaseClient}
-          providers={['google']}
-          socialLayout="horizontal"
-        />
+        <Container size="xs" p="lg">
+          <Auth
+            redirectTo={process.env.NEXT_PUBLIC_APP_URL}
+            appearance={{ theme: ThemeSupa }}
+            supabaseClient={supabaseClient}
+            providers={['google']}
+            onlyThirdPartyProviders
+            socialLayout="vertical"
+          />
+        </Container>
       </>
     );
 
