@@ -1,11 +1,20 @@
 import { Card, Image, Text, Badge, Anchor, Group } from '@mantine/core';
 
-export default function ItemCard({ title, description, url, image, addedBy, createdAt }) {
+export default function ItemCard({
+  title,
+  description,
+  url,
+  image,
+  addedBy,
+  createdAt,
+}) {
   return (
     <Card shadow="sm" p="lg" radius="md" withBorder>
-      <Card.Section>
-        <Image src={image} height={160} alt={description} />
-      </Card.Section>
+      {image && (
+        <Card.Section>
+          <Image src={image} height={160} alt={description} />
+        </Card.Section>
+      )}
 
       <Group position="apart" mt="md" mb="xs">
         <Text weight={500}>{title}</Text>

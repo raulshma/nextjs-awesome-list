@@ -5,10 +5,14 @@ import {
   IconMessages,
   IconDatabase,
   IconBrandGithub,
+  IconAdjustmentsHorizontal,
 } from '@tabler/icons';
 import { ThemeIcon, UnstyledButton, Group, Text, Anchor } from '@mantine/core';
+import { useUser } from '@supabase/auth-helpers-react';
+import { useRouter } from 'next/router';
 
-function MainLink({ icon, color, label, link }) {
+function MainLink({ icon, color, label, link, route, isRoute }) {
+  const router = useRouter();
   return (
     <UnstyledButton
       sx={(theme) => ({
@@ -32,7 +36,14 @@ function MainLink({ icon, color, label, link }) {
           {icon}
         </ThemeIcon>
 
-        {link ? (
+        {isRoute ? (
+          <Anchor
+            variant="text"
+            onClick={() => router.replace(route)}
+          >
+            {label}
+          </Anchor>
+        ) : link ? (
           <Anchor variant="text" href={link} target="_blank">
             {label}
           </Anchor>
@@ -54,9 +65,20 @@ const data = [
   { icon: <IconAlertCircle size={16} />, color: 'teal', label: 'open issues' },
   { icon: <IconMessages size={16} />, color: 'violet', label: 'discussions' },
   { icon: <IconDatabase size={16} />, color: 'grape', label: 'databases' },
+  {
+    icon: <IconAdjustmentsHorizontal size={16} />,
+    color: 'gray',
+    label: 'admin',
+    permission: 'auth',
+    isRoute: true,
+    route: '/admin',
+  },
 ];
 
 export function MainLinks() {
-  const links = data.map((link) => <MainLink {...link} key={link.label} />);
+  const user = useUser();
+  const links = data
+    .filter((link) => (link.permission && user != null) || !link.permission)
+    .map((link) => <MainLink {...link} key={link.label} />);
   return <div>{links}</div>;
 }

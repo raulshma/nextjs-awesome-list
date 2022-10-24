@@ -1,11 +1,12 @@
 import '../styles/globals.css';
-import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { createBrowserSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import { SessionContextProvider } from '@supabase/auth-helpers-react';
 import Head from 'next/head';
 import { MantineProvider, ColorSchemeProvider } from '@mantine/core';
 import { useHotkeys, useLocalStorage } from '@mantine/hooks';
+import { NotificationsProvider } from '@mantine/notifications';
+import { RouterTransition } from '../components/RouterTransition';
 import MainAppShell from '../components/AppShell/AppShell';
 
 function MyApp({ Component, pageProps }) {
@@ -39,13 +40,16 @@ function MyApp({ Component, pageProps }) {
           withNormalizeCSS
           theme={{ colorScheme, fontFamily: 'Merriweather Sans' }}
         >
+          <RouterTransition />
           <SessionContextProvider
             supabaseClient={supabaseClient}
             initialSession={pageProps.initialSession}
           >
-            <MainAppShell>
-              <Component {...pageProps} />
-            </MainAppShell>
+            <NotificationsProvider>
+              <MainAppShell>
+                <Component {...pageProps} />
+              </MainAppShell>
+            </NotificationsProvider>
           </SessionContextProvider>
         </MantineProvider>
       </ColorSchemeProvider>
