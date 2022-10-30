@@ -9,7 +9,7 @@ export default function ItemCard({
   createdAt,
 }) {
   return (
-    <Card shadow="sm" p="lg" radius="md" withBorder>
+    <Card shadow="sm" p="lg" mb={10} radius="md" withBorder>
       {image && (
         <Card.Section>
           <Image src={image} height={160} alt={description} />

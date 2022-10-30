@@ -15,18 +15,19 @@ import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { showNotification } from '@mantine/notifications';
 import { IconSearch } from '@tabler/icons';
 
+const initalFormValues = {
+  title: '',
+  url: '',
+  description: '',
+  image_url: '',
+};
+
 export default function Admin({ user }) {
   const supabase = useSupabaseClient();
   const [addOpened, setAddOpened] = useState(false);
 
   const form = useForm({
-    initialValues: {
-      title: '',
-      url: '',
-      description: '',
-      image_url: '',
-    },
-
+    initialValues: initalFormValues,
     validate: {
       title: (value) => (value.length > 0 ? null : 'title is required.'),
       url: (value) => (value.length > 0 ? null : 'url is required.'),
@@ -49,6 +50,7 @@ export default function Admin({ user }) {
         title: 'Success',
         message: data.at(0).id,
       });
+      form.reset({}, { keepDefaultValues: true });
       setAddOpened(false);
     }
     if (error) {

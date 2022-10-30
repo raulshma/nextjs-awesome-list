@@ -24,7 +24,8 @@
     "@tabler/icons": "^1.107.0",
     "next": "12.3.1",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "react-infinite-scroll-component": "^6.1.0"
   },
   "devDependencies": {
     "eslint": "8.26.0",
