@@ -68,7 +68,7 @@ export default function Admin({ user }) {
         if (!urlValue.startsWith('http://') && !urlValue.startsWith('https://'))
           urlValue = `https://${urlValue}`;
         const response = await fetch(
-          `https://api.allorigins.win/raw?url=${urlValue}`
+          `https://cors-bypass.raulshma.workers.dev/?${urlValue}`
         );
         if (response.ok) {
           const responseBody = await response.text();
