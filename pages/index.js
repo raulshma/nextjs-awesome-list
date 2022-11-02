@@ -3,7 +3,10 @@ import { Container, Loader, Center } from '@mantine/core';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import ItemCard from '../components/ItemCard';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useDebouncedState } from '@mantine/hooks';
+import { TextInput, ActionIcon, Paper } from '@mantine/core';
+import { IconSquareX } from '@tabler/icons';
 
 const getPagination = (total, current, batchSize = 10) => {
   if (current >= total) return undefined;
@@ -17,8 +20,13 @@ export default function Home({ data, count, hasMoreData }) {
   const [listData, setListData] = useState(data);
   const [moreRecords, setMoreRecords] = useState(hasMoreData);
   const supabase = useSupabaseClient();
+  // Will remove it later too sleepy right now.
+  const [searchInputValue, setSearchInputValue] = useState('');
+  const [searchQuery, setSearchQuery] = useDebouncedState('', 800);
+  const [isSearching, setIsSearching] = useState(false);
 
   const getMorePost = async () => {
+    if (searchQuery && searchQuery.length > 1) return;
     debugger;
     const paginationCalc = getPagination(count, listData.length);
     if (paginationCalc === undefined) return;
@@ -36,8 +44,63 @@ export default function Home({ data, count, hasMoreData }) {
     setListData((listData) => [...listData, ...data]);
   };
 
+  const searchPost = async (keyword) => {
+    setIsSearching(true);
+    try {
+      const newKeyword = keyword?.includes(' ') ? `'${keyword}'` : keyword;
+      let { data, error } = await supabase.rpc('search_list', {
+        keyword: newKeyword,
+      });
+
+      if (error) console.error(error);
+      else setListData(data);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  useEffect(() => {
+    if (searchQuery && searchQuery.length > 1) {
+      searchPost(searchQuery);
+    }
+  }, [searchQuery]);
+
   return (
-    <Container size="lg" px="xs">
+    <Container size="lg" px="xs" sx={{ position: 'relative' }}>
+      <Paper
+        shadow="md"
+        p="xs"
+        radius={0}
+        sx={{ position: 'sticky', top: 50, zIndex: 1000, marginBottom: 10 }}
+      >
+        <TextInput
+          placeholder="Search"
+          variant="filled"
+          color="white"
+          onChange={(e) => (
+            setSearchQuery(e.target.value), setSearchInputValue(e.target.value)
+          )}
+          rightSection={
+            isSearching ? (
+              <Loader size="xs" />
+            ) : searchQuery && searchQuery.length > 1 ? (
+              <ActionIcon>
+                <IconSquareX
+                  onClick={() => (
+                    setSearchQuery(''),
+                    setSearchInputValue(''),
+                    setListData(data)
+                  )}
+                />
+              </ActionIcon>
+            ) : (
+              <></>
+            )
+          }
+          value={searchInputValue}
+        />
+      </Paper>
+
       <InfiniteScroll
         dataLength={listData.length}
         next={getMorePost}
