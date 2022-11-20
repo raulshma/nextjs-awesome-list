@@ -9,6 +9,7 @@ import {
   Textarea,
   Box,
   ActionIcon,
+  Select,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
@@ -20,9 +21,10 @@ const initalFormValues = {
   url: '',
   description: '',
   image_url: '',
+  label_id: null,
 };
 
-export default function Admin({ user }) {
+export default function Item({ data, user }) {
   const supabase = useSupabaseClient();
   const [addOpened, setAddOpened] = useState(false);
 
@@ -104,7 +106,6 @@ export default function Admin({ user }) {
         height: 300,
       })}
     >
-      <div>Hello {user.email}</div>
       <Button variant="outline" onClick={() => setAddOpened(true)}>
         add item
       </Button>
@@ -147,8 +148,23 @@ export default function Admin({ user }) {
               placeholder="image url here"
               {...form.getInputProps('image_url')}
             />
-
+            <Select
+              label="label"
+              placeholder="pick one"
+              searchable
+              nothingFound="no options"
+              data={data?.map((item) => {
+                return { value: item.id, label: item.name };
+              })}
+              {...form.getInputProps('label_id')}
+            />
             <Group position="right" mt="md">
+              <Button
+                type="reset"
+                onClick={() => form.reset({}, initalFormValues)}
+              >
+                reset
+              </Button>
               <Button type="submit">add</Button>
             </Group>
           </form>
@@ -158,4 +174,15 @@ export default function Admin({ user }) {
   );
 }
 
-export const getServerSideProps = withPageAuth({ redirectTo: '/login' });
+export const getServerSideProps = withPageAuth({
+  redirectTo: '/login',
+  async getServerSideProps(ctx, supabase) {
+    const { data } = await supabase
+      .from('labels')
+      .select('*')
+      .order('created_at', { ascending: false });
+    // if (data && Array.isArray(data))
+    //   data.unshift({ id: '', name: 'select label' });
+    return { props: { data } };
+  },
+});

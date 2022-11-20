@@ -34,7 +34,7 @@ export default function Home({ data, count, hasMoreData }) {
     const { from, to } = paginationCalc;
     const { data, count: recordCount } = await supabase
       .from('list')
-      .select('*', { count: 'exact' })
+      .select('*, labels (name)', { count: 'exact' })
       .order('created_at', { ascending: false })
       .range(from, to);
 
@@ -48,7 +48,7 @@ export default function Home({ data, count, hasMoreData }) {
     setIsSearching(true);
     try {
       const newKeyword = keyword?.includes(' ') ? `'${keyword}'` : keyword;
-      let { data, error } = await supabase.rpc('search_list', {
+      let { data, error } = await supabase.rpc('sp_search', {
         keyword: newKeyword,
       });
 
@@ -126,6 +126,7 @@ export default function Home({ data, count, hasMoreData }) {
               image={item.image_url}
               addedBy={item.added_by}
               createdAt={item.created_at}
+              label={item.labels}
             />
           ))}
       </InfiniteScroll>
@@ -140,7 +141,7 @@ export const getServerSideProps = withPageAuth({
     if (user.data) {
       const { data, count } = await supabase
         .from('list')
-        .select('*', { count: 'exact' })
+        .select('*, labels (name)', { count: 'exact' })
         .order('created_at', { ascending: false })
         .range(0, 9);
       const hasMoreData = data?.length < count;

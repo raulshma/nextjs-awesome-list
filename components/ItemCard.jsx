@@ -1,4 +1,13 @@
-import { Card, Image, Text, Badge, Anchor, Group } from '@mantine/core';
+import {
+  Card,
+  Image,
+  Text,
+  Badge,
+  Anchor,
+  Group,
+  Divider,
+  Flex
+} from '@mantine/core';
 
 export default function ItemCard({
   title,
@@ -7,9 +16,10 @@ export default function ItemCard({
   image,
   addedBy,
   createdAt,
+  label,
 }) {
   return (
-    <Card shadow="sm" p="lg" mb={10} radius="md" withBorder>
+    <Card shadow="sm" p="md" mb={10} radius="md" withBorder>
       {image && (
         <Card.Section>
           <Image src={image} height={160} alt={description} />
@@ -18,24 +28,31 @@ export default function ItemCard({
 
       <Group position="apart" mt="md" mb="xs">
         <Text weight={500}>{title}</Text>
-        <Badge color="blue" variant="light">
-          Mix
-        </Badge>
+        {label?.name && (
+          <Badge color="blue" variant="light">
+            {label.name}
+          </Badge>
+        )}
       </Group>
 
       <Text size="sm" color="dimmed">
         {description}
       </Text>
-      <Anchor
-        variant="link"
-        color="orange"
-        href={url}
-        target="_blank"
-        mt="md"
-        radius="md"
-      >
-        visit now
-      </Anchor>
+      <Divider my="xs" />
+      <Flex justify="space-between" align="center" direction="row" wrap="wrap">
+        <Anchor
+          variant="link"
+          color="orange"
+          href={url}
+          target="_blank"
+          radius="md"
+        >
+          visit now
+        </Anchor>
+        <Text size="xs" color="dimmed">
+          {new Date(createdAt).toLocaleString()}
+        </Text>
+      </Flex>
     </Card>
   );
 }
