@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { useDebouncedState } from '@mantine/hooks';
 import { TextInput, ActionIcon, Paper } from '@mantine/core';
 import { IconSquareX } from '@tabler/icons';
+import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 
 const getPagination = (total, current, batchSize = 10) => {
   if (current >= total) return undefined;
@@ -134,19 +135,13 @@ export default function Home({ data, count, hasMoreData }) {
   );
 }
 
-export const getServerSideProps = withPageAuth({
-  redirectTo: '/login',
-  async getServerSideProps(ctx, supabase) {
-    const user = await supabase.auth.getUser();
-    if (user.data) {
-      const { data, count } = await supabase
-        .from('list')
-        .select('*, labels (name)', { count: 'exact' })
-        .order('created_at', { ascending: false })
-        .range(0, 9);
-      const hasMoreData = data?.length < count;
-      return { props: { data, count, hasMoreData } };
-    }
-    return { props: { data: [], count: undefined, hasMoreData: undefined } };
-  },
-});
+export const getServerSideProps = async (ctx) => {
+  const supabase = createServerSupabaseClient(ctx);
+  const { data, count } = await supabase
+    .from('list')
+    .select('*, labels (name)', { count: 'exact' })
+    .order('created_at', { ascending: false })
+    .range(0, 9);
+  const hasMoreData = data?.length < count;
+  return { props: { data, count, hasMoreData } };
+};
