@@ -1,5 +1,5 @@
 import { withPageAuth } from '@supabase/auth-helpers-nextjs';
-import { Container, Loader, Center } from '@mantine/core';
+import { Container, Loader, Center, Text } from '@mantine/core';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import ItemCard from '../components/ItemCard';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
@@ -101,7 +101,7 @@ export default function Home({ data, count, hasMoreData }) {
           value={searchInputValue}
         />
       </Paper>
-
+      <Text size={'sm'} pb={'sm'} pt={'xs'}>Total links {count}</Text>
       <InfiniteScroll
         dataLength={listData.length}
         next={getMorePost}
